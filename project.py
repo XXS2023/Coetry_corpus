@@ -1,5 +1,4 @@
-from textblob import TextBlob
-from textblob import Word
+from textblob import TextBlob, Word
 from nltk.stem import WordNetLemmatizer
 from collections import Counter
 import sys
@@ -27,6 +26,7 @@ Which author would you like to study now?''')
         text = open(file).read().lower().replace("'s", "")
         blob_object = TextBlob(text)
         tokens = blob_object.words
+        tagged = blob_object.tags
         num_words = counting(tokens)
         set_words = original(tokens)
         print(f"The total number of words in {poet}'s collection of poetry: {num_words} words")
@@ -45,71 +45,13 @@ Which author would you like to study now?''')
 Enter a number here:  ''')
             print()
             if choice == "1":
-                while True:
-                    number = input("Please, choose the number of the most frequent words: ")
-                    try:
-                        common = Counter(tokens).most_common(int(number))
-                        print(f"These are {number} most common words in {poet}'s collection of poetry:")
-                        print()
-                        i = 0
-                        for common_word in common:
-                            i += 1
-                            pprint.pprint(f"{i} {common_word}")
-                        print()
-                        break
-                    except ValueError:
-                        print("Sorry, the input is incorrect. Please, enter a number.")
+                find_common(tokens, "words")
             elif choice == "2":
-                while True:
-                    number1 = input("Please, choose the number of the most frequent nouns: ")
-                    try:
-                        tagged = blob_object.tags
-                        nouns = noun(tagged)
-                        common_nouns = Counter(nouns).most_common(int(number1))
-                        print(f"These are {number1} most frequet nouns:")
-                        print()
-                        i = 0
-                        for common_noun in common_nouns:
-                            i += 1
-                            pprint.pprint(f"{i} {common_noun}")
-                        print()
-                        break
-                    except ValueError:
-                        print("Sorry, the input is incorrect. Please, enter a number.")
+                find_common(noun(tagged), "nouns")
             elif choice == "3":
-                while True:
-                    number2 = input("Please, choose the number of the most frequent adjectives: ")
-                    try:
-                        tagged = blob_object.tags
-                        adjectives = adjective(tagged)
-                        common_adjectives = Counter(adjectives).most_common(int(number2))
-                        print(f"These are {number2} most frequet adjectives:")
-                        print()
-                        i = 0
-                        for common_adjective in common_adjectives:
-                            i += 1
-                            pprint.pprint(f"{i} {common_adjective}")
-                        print()
-                        break
-                    except ValueError:
-                        print("Sorry, the input is incorrect. Please, enter a number.")
+                find_common(adjective(tagged), "adjectives")
             elif choice == "4":
-                while True:
-                    number3 = input("Please, choose the number of the most frequent verbs: ")
-                    try:
-                        tagged = blob_object.tags
-                        verbs = verb(tagged)
-                        common_verbs = Counter(verbs).most_common(int(number3))
-                        print(f"These are {number3} most frequet verbs:")
-                        print()
-                        i = 0
-                        for common_verb in common_verbs:
-                            i += 1
-                            pprint.pprint(f"{i} {common_verb}")
-                        print()
-                        break
-                    except ValueError:
-                        print("Sorry, the input is incorrect. Please, enter a number.")
+                find_common(verb(tagged), "verbs")
             elif choice == "5":
                 while True:
                     text = open(file)
@@ -150,6 +92,22 @@ def counting(n):
 def original(n):
     return len(set(n))
 
+def find_common(part_of_speech, type):
+    while True:
+            number = input(f"Please, choose the number of the most frequent {type}: ")
+            try:
+                common = Counter(part_of_speech).most_common(int(number))
+                print(f"These are {number} most frequent {type}:")
+                print()
+                i = 0
+                for common_word in common:
+                    i += 1
+                    pprint.pprint(f"{i} {common_word}")
+                print()
+                break
+            except ValueError:
+                print("Sorry, the input is incorrect. Please, enter a number.")
+
 def noun(n):
     nouns = []
     for lexem in n:
@@ -183,3 +141,4 @@ def verb(n):
 
 if __name__ == "__main__":
     main()
+
